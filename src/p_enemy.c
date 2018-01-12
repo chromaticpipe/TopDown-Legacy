@@ -1112,7 +1112,7 @@ void A_JetJawChomp(mobj_t *actor)
 	if (!actor->target || !(actor->target->flags & MF_SHOOTABLE)
 		|| actor->target->health <= 0 || !P_CheckSight(actor, actor->target))
 	{
-		P_SetMobjState(actor, actor->info->spawnstate);
+		P_SetMobjStateNF(actor, actor->info->spawnstate);
 		return;
 	}
 
@@ -5130,9 +5130,11 @@ void A_UnidusBall(mobj_t *actor)
 		case 0: // at least one frame where not dashing
 			if (!skull) ++actor->extravalue2;
 			else break;
+			/* FALLTHRU */
 		case 1: // at least one frame where ARE dashing
 			if (skull) ++actor->extravalue2;
 			else break;
+			/* FALLTHRU */
 		case 2: // not dashing again?
 			if (skull) break;
 			// launch.
@@ -6489,7 +6491,7 @@ void A_Boss7Chase(mobj_t *actor)
 					break;
 				}
 				actor->threshold++;
-				// fall into...
+				/* FALLTHRU */
 			case 1: // Chaingun Goop
 				A_FaceTarget(actor);
 				P_SetMobjState(actor, S_BLACKEGG_SHOOT1);

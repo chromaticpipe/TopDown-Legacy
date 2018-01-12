@@ -3022,6 +3022,7 @@ static void M_DrawGenericMenu(void)
 							W_CachePatchName(currentMenu->menuitems[i].patch, PU_CACHE));
 					}
 				}
+				/* FALLTHRU */
 			case IT_NOTHING:
 			case IT_DYBIGSPACE:
 				y += LINEHEIGHT;
@@ -3073,6 +3074,7 @@ static void M_DrawGenericMenu(void)
 					break;
 			case IT_STRING2:
 				V_DrawString(x, y, 0, currentMenu->menuitems[i].text);
+				/* FALLTHRU */
 			case IT_DYLITLSPACE:
 				y += SMALLLINEHEIGHT;
 				break;
@@ -3085,6 +3087,7 @@ static void M_DrawGenericMenu(void)
 			case IT_TRANSTEXT:
 				if (currentMenu->menuitems[i].alphaKey)
 					y = currentMenu->y+currentMenu->menuitems[i].alphaKey;
+				/* FALLTHRU */
 			case IT_TRANSTEXT2:
 				V_DrawString(x, y, V_TRANSLUCENT, currentMenu->menuitems[i].text);
 				y += SMALLLINEHEIGHT;
@@ -3300,6 +3303,7 @@ static void M_DrawCenteredMenu(void)
 							W_CachePatchName(currentMenu->menuitems[i].patch, PU_CACHE));
 					}
 				}
+				/* FALLTHRU */
 			case IT_NOTHING:
 			case IT_DYBIGSPACE:
 				y += LINEHEIGHT;
@@ -3350,6 +3354,7 @@ static void M_DrawCenteredMenu(void)
 					break;
 			case IT_STRING2:
 				V_DrawCenteredString(x, y, 0, currentMenu->menuitems[i].text);
+				/* FALLTHRU */
 			case IT_DYLITLSPACE:
 				y += SMALLLINEHEIGHT;
 				break;
@@ -3852,6 +3857,7 @@ static void M_ChangeLevel(INT32 choice)
 static void M_ConfirmSpectate(INT32 choice)
 {
 	(void)choice;
+	// We allow switching to spectator even if team changing is not allowed
 	M_ClearMenus(true);
 	COM_ImmedExecute("changeteam spectator");
 }
@@ -3859,6 +3865,11 @@ static void M_ConfirmSpectate(INT32 choice)
 static void M_ConfirmEnterGame(INT32 choice)
 {
 	(void)choice;
+	if (!cv_allowteamchange.value)
+	{
+		M_StartMessage(M_GetText("The server is not allowing\nteam changes at this time.\nPress a key.\n"), NULL, MM_NOTHING);
+		return;
+	}
 	M_ClearMenus(true);
 	COM_ImmedExecute("changeteam playing");
 }
@@ -4621,7 +4632,7 @@ static void M_ReadSavegameInfo(UINT32 slot)
 		savegameinfo[slot].botskin = 0;
 
 	if (savegameinfo[slot].botskin)
-		snprintf(savegameinfo[slot].playername, 32, "%s & %s",
+		snprintf(savegameinfo[slot].playername, 36, "%s & %s",
 			skins[savegameinfo[slot].skinnum].realname,
 			skins[savegameinfo[slot].botskin-1].realname);
 	else
