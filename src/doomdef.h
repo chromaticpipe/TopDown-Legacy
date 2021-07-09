@@ -353,7 +353,7 @@ void CONS_Debug(INT32 debugflags, const char *fmt, ...) FUNCDEBUG;
 
 // Things that used to be in dstrings.h
 #define SAVEGAMENAME "srb2tdsav"
-char savegamename[256];
+extern char savegamename[256];
 
 // m_misc.h
 #ifdef GETTEXT
@@ -504,3 +504,4 @@ extern const char *compdate, *comptime, *comprevision, *compbranch;
 //#define SECTORSPECIALSAFTERTHINK
 
 #endif // __DOOMDEF__
+

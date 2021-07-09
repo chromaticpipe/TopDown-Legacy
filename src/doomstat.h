@@ -378,7 +378,7 @@ extern recorddata_t *mainrecords[NUMMAPS];
 extern UINT8 mapvisited[NUMMAPS];
 
 // Temporary holding place for nights data for the current map
-nightsdata_t ntemprecords;
+extern nightsdata_t ntemprecords;
 
 extern UINT32 token; ///< Number of tokens collected in a level
 extern UINT32 tokenlist; ///< List of tokens collected
@@ -498,3 +498,4 @@ extern INT32 adminplayer, serverplayer;
 /// \note put these in d_clisrv outright?
 
 #endif //__DOOMSTAT__
+
