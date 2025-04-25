@@ -9,6 +9,8 @@ target_sources(SRB2SDL2 PRIVATE comptime.c md5.c config.h.in)
 ### Configuration
 set(SRB2_CONFIG_HAVE_BLUA ON CACHE BOOL
 	"Enable Lua interpreter support")
+set(SRB2_CONFIG_EXTERNAL_ASSETS OFF CACHE BOOL
+	"Bundle and hash external assets during configuration. Recommended when packaging.")
 set(SRB2_CONFIG_HAVE_PNG ON CACHE BOOL
 	"Enable PNG support. Depends on zlib, so will be disabled if you don't enable that too.")
 set(SRB2_CONFIG_HAVE_ZLIB ON CACHE BOOL
