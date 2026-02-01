@@ -1,7 +1,7 @@
 // SONIC ROBO BLAST 2
 //-----------------------------------------------------------------------------
 // Copyright (C) 2012-2016 by John "JTE" Muniz.
-// Copyright (C) 2012-2016 by Sonic Team Junior.
+// Copyright (C) 2012-2018 by Sonic Team Junior.
 //
 // This program is free software distributed under the
 // terms of the GNU General Public License, version 2.
@@ -55,7 +55,7 @@ void Got_Luacmd(UINT8 **cp, INT32 playernum)
 	lua_pop(gL, 1); // pop flags
 
 	// requires server/admin and the player is not one of them
-	if ((flags & 1) && playernum != serverplayer && playernum != adminplayer)
+	if ((flags & 1) && playernum != serverplayer && !IsPlayerAdmin(playernum))
 		goto deny;
 
 	lua_rawgeti(gL, -1, 1); // push function from command info table
@@ -77,7 +77,9 @@ void Got_Luacmd(UINT8 **cp, INT32 playernum)
 
 deny:
 	//must be hacked/buggy client
-	lua_settop(gL, 0); // clear stack
+	if (gL) // check if Lua is actually turned on first, you dummmy -- Monster Iestyn 04/07/18
+		lua_settop(gL, 0); // clear stack
+
 	CONS_Alert(CONS_WARNING, M_GetText("Illegal lua command received from %s\n"), player_names[playernum]);
 	if (server)
 	{
@@ -131,7 +133,7 @@ void COM_Lua_f(void)
 		UINT8 argc;
 		lua_pop(gL, 1); // pop command info table
 
-		if (flags & 1 && !server && adminplayer != playernum) // flag 1: only server/admin can use this command.
+		if (flags & 1 && !server && !IsPlayerAdmin(playernum)) // flag 1: only server/admin can use this command.
 		{
 			CONS_Printf(M_GetText("Only the server or a remote admin can use this.\n"));
 			return;
@@ -301,6 +303,8 @@ static int lib_cvRegisterVar(lua_State *L)
 #define FIELDERROR(f, e) luaL_error(L, "bad value for " LUA_QL(f) " in table passed to " LUA_QL("CV_RegisterVar") " (%s)", e);
 #define TYPEERROR(f, t) FIELDERROR(f, va("%s expected, got %s", lua_typename(L, t), luaL_typename(L, -1)))
 
+	memset(cvar, 0x00, sizeof(consvar_t)); // zero everything by default
+
 	lua_pushnil(L);
 	while (lua_next(L, 1)) {
 		// stack: cvar table, cvar userdata, key/index, value
@@ -387,6 +391,13 @@ static int lib_cvRegisterVar(lua_State *L)
 
 #undef FIELDERROR
 #undef TYPEERROR
+
+	if (!cvar->name)
+		return luaL_error(L, M_GetText("Variable has no name!\n"));
+	if ((cvar->flags & CV_NOINIT) && !(cvar->flags & CV_CALL))
+		return luaL_error(L, M_GetText("Variable %s has CV_NOINIT without CV_CALL\n"), cvar->name);
+	if ((cvar->flags & CV_CALL) && !cvar->func)
+		return luaL_error(L, M_GetText("Variable %s has CV_CALL without a function\n"), cvar->name);
 
 	// stack: cvar table, cvar userdata
 	lua_getfield(L, LUA_REGISTRYINDEX, "CV_Vars");

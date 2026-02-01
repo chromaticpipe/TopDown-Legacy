@@ -1,7 +1,7 @@
 // SONIC ROBO BLAST 2
 //-----------------------------------------------------------------------------
 // Copyright (C) 2012-2016 by John "JTE" Muniz.
-// Copyright (C) 2012-2016 by Sonic Team Junior.
+// Copyright (C) 2012-2018 by Sonic Team Junior.
 //
 // This program is free software distributed under the
 // terms of the GNU General Public License, version 2.
@@ -88,7 +88,12 @@ enum mobj_e {
 	mobj_justhurt,
 	mobj_growing,
 	mobj_shrinking,
+#ifdef ESLOPE
+	mobj_pinchphase,
+	mobj_standingslope
+#else
 	mobj_pinchphase
+#endif
 };
 
 static const char *const mobj_opt[] = {
@@ -156,6 +161,9 @@ static const char *const mobj_opt[] = {
 	"growing",
 	"shrinking",
 	"pinchphase",
+#ifdef ESLOPE
+	"standingslope",
+#endif
 	NULL};
 
 #define UNIMPLEMENTED luaL_error(L, LUA_QL("mobj_t") " field " LUA_QS " is not implemented for Lua and cannot be accessed.", mobj_opt[field])
@@ -383,6 +391,11 @@ static int mobj_get(lua_State *L)
 	case mobj_pinchphase:
 		lua_pushinteger(L, mo->pinchphase);
 		break;
+#ifdef ESLOPE
+	case mobj_standingslope:
+		LUA_PushUserdata(L, mo->standingslope, META_SLOPE);
+		break;
+#endif
 	default: // extra custom variables in Lua memory
 		lua_getfield(L, LUA_REGISTRYINDEX, LREG_EXTVARS);
 		I_Assert(lua_istable(L, -1));
@@ -697,6 +710,10 @@ static int mobj_set(lua_State *L)
 	case mobj_pinchphase:
 		mo->pinchphase = luaL_checkinteger(L, 3);
 		break;
+#ifdef ESLOPE
+	case mobj_standingslope:
+		return NOSET;
+#endif
 	default:
 		lua_getfield(L, LUA_REGISTRYINDEX, LREG_EXTVARS);
 		I_Assert(lua_istable(L, -1));

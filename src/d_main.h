@@ -2,7 +2,7 @@
 //-----------------------------------------------------------------------------
 // Copyright (C) 1993-1996 by id Software, Inc.
 // Copyright (C) 1998-2000 by DooM Legacy Team.
-// Copyright (C) 1999-2016 by Sonic Team Junior.
+// Copyright (C) 1999-2018 by Sonic Team Junior.
 //
 // This program is free software distributed under the
 // terms of the GNU General Public License, version 2.
@@ -34,7 +34,7 @@ void D_SRB2Loop(void) FUNCNORETURN;
 // D_SRB2Main()
 // Not a globally visible function, just included for source reference,
 // calls all startup code, parses command line options.
-// If not overrided by user input, calls N_AdvanceDemo.
+// If not overrided by user input, calls D_AdvanceDemo.
 //
 void D_SRB2Main(void);
 
@@ -51,9 +51,6 @@ const char *D_Home(void);
 //
 // BASE LEVEL
 //
-void D_PageTicker(void);
-// pagename is lumpname of a 320x200 patch to fill the screen
-void D_PageDrawer(const char *pagename);
 void D_AdvanceDemo(void);
 void D_StartTitle(void);
 

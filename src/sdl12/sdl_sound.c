@@ -621,10 +621,11 @@ void I_FreeSfx(sfxinfo_t * sfx)
 // Pitching (that is, increased speed of playback)
 //  is set, but currently not used by mixing.
 //
-INT32 I_StartSound(sfxenum_t id, UINT8 vol, UINT8 sep, UINT8 pitch, UINT8 priority)
+INT32 I_StartSound(sfxenum_t id, UINT8 vol, UINT8 sep, UINT8 pitch, UINT8 priority, INT32 channel)
 {
 	(void)priority;
 	(void)pitch;
+	(void)channel;
 
 	if (nosound)
 		return 0;
@@ -1434,7 +1435,7 @@ static boolean LoadSong(void *data, size_t lumplength, size_t selectpos)
 
 	if (fwrite(data, lumplength, 1, midfile) == 0)
 	{
-		CONS_Printf(M_GetText("Couldn't write music into file %s because %s\n"), tempname, strerror(ferror(midfile)));
+		CONS_Printf(M_GetText("Couldn't write music into file %s because %s\n"), tempname, M_FileError(midfile));
 		Z_Free(data);
 		fclose(midfile);
 		return false;
