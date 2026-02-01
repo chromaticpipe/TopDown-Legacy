@@ -5,7 +5,7 @@ Ver=3
 IsCpp=0
 Type=0
 UnitCount=279
-Folders=A_Asm,B_Bot,BLUA,D_Doom,F_Frame,G_Game,H_Hud,Hw_Hardware,Hw_Hardware/r_opengl,I_Interface,I_Interface/Dummy,I_Interface/SDL,I_Interface/Win32,LUA,M_Misc,P_Play,R_Rend,S_Sounds,W_Wad
+Folders=B_Bot,BLUA,D_Doom,F_Frame,G_Game,H_Hud,Hw_Hardware,Hw_Hardware/r_opengl,I_Interface,I_Interface/Dummy,I_Interface/SDL,I_Interface/Win32,LUA,M_Misc,P_Play,R_Rend,S_Sounds,W_Wad
 CommandLine=
 CompilerSettings=00000000000100000111e1
 PchHead=-1
@@ -1473,36 +1473,6 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit149]
-FileName=src\tmap.nas
-Folder=A_Asm
-Compile=0
-CompileCpp=0
-Link=0
-Priority=1000
-OverrideBuildCmd=1
-BuildCmd=nasm.exe -g -o $@ -f win32 src/tmap.nas
-
-[Unit150]
-FileName=src\asm_defs.inc
-Folder=A_Asm
-Compile=0
-CompileCpp=0
-Link=0
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit151]
-FileName=src\vid_copy.s
-Folder=A_Asm
-Compile=1
-CompileCpp=0
-Link=1
-Priority=1000
-OverrideBuildCmd=1
-BuildCmd=$(CC) $(CFLAGS) -x assembler-with-cpp -c src/vid_copy.s -o $@
-
 [Unit152]
 FileName=src\y_inter.h
 Folder=H_Hud
@@ -1542,26 +1512,6 @@ Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
-
-[Unit156]
-FileName=src\p5prof.h
-Folder=A_Asm
-Compile=1
-CompileCpp=0
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit157]
-FileName=src\tmap_mmx.nas
-Folder=A_Asm
-Compile=0
-CompileCpp=0
-Link=0
-Priority=1000
-OverrideBuildCmd=1
-BuildCmd=nasm.exe -g -o $@ -f win32 src/tmap_mmx.nas
 
 [Unit159]
 FileName=src\lzf.h
@@ -2024,7 +1974,7 @@ Includes=libs/libpng-src;libs/zlib;libs/gme/include;libs/fmodex/inc;libs
 Libs=libs/libpng-src/projects;libs/zlib/win32;libs/miniupnpc/mingw32;libs/gme/win32;libs/gme/win32;libs/fmodex/lib
 ResourceIncludes=src/win32
 MakeIncludes=comptime.mk;cpdebug.mk
-Compiler=-DNDEBUG_@@_-fno-exceptions_@@_-DSTDC_HEADERS_@@_-Wall_@@_-Os_@@_-g_@@_-gdwarf-2_@@_-D_WINDOWS_@@_-DHAVE_PNG_@@_-DNOROPENGL_@@_-D__USE_MINGW_ANSI_STDIO=0_@@_-DHAVE_MINIUPNPC_@@_-DSTATIC_MINIUPNPC_@@_-DHAVE_BLUA_@@_-DHAVE_LIBGME_@@_
+Compiler=-DNDEBUG_@@_-fno-exceptions_@@_-DSTDC_HEADERS_@@_-Wall_@@_-Os_@@_-g_@@_-gdwarf-2_@@_-D_WINDOWS_@@_-DHAVE_PNG_@@_-DNOROPENGL_@@_-D__USE_MINGW_ANSI_STDIO=0_@@_-DHAVE_MINIUPNPC_@@_-DSTATIC_MINIUPNPC_@@_-DHAVE_BLUA_@@_-DHAVE_GME_@@_
 CppCompiler=-Os_@@_-g_@@_-gdwarf-2_@@_
 Linker=-lgdi32_@@_-ldinput_@@_-ldxguid_@@_-lwinmm_@@_-lpng32_@@_-lz32_@@_-lminiupnpc_@@_-lws2_32_@@_-liphlpapi_@@_-mwindows_@@_-lgme.dll_@@_-lfmodex_@@_
 PreprocDefines=NORMALSRB2_@@_
@@ -2051,7 +2001,7 @@ Includes=libs/libpng-src;libs/zlib;libs/gme/include;libs/fmodex/inc;libs
 Libs=libs/libpng-src/projects;libs/zlib/win32;libs/miniupnpc/mingw32;libs/gme/win32;libs/fmodex/lib
 ResourceIncludes=src/win32
 MakeIncludes=comptime.mk;cpdebug.mk
-Compiler=-D_DEBUG_@@_-fno-exceptions_@@_-DSTDC_HEADERS_@@_-Wall_@@_-O0_@@_-g_@@_-gdwarf-2_@@_-D_WINDOWS_@@_-DHAVE_PNG_@@_-DNOROPENGL_@@_-D__USE_MINGW_ANSI_STDIO=0_@@_-DHAVE_MINIUPNPC_@@_-DSTATIC_MINIUPNPC_@@_-DHAVE_BLUA_@@_-DHAVE_LIBGME_@@_
+Compiler=-D_DEBUG_@@_-fno-exceptions_@@_-DSTDC_HEADERS_@@_-Wall_@@_-O0_@@_-g_@@_-gdwarf-2_@@_-D_WINDOWS_@@_-DHAVE_PNG_@@_-DNOROPENGL_@@_-D__USE_MINGW_ANSI_STDIO=0_@@_-DHAVE_MINIUPNPC_@@_-DSTATIC_MINIUPNPC_@@_-DHAVE_BLUA_@@_-DHAVE_GME_@@_
 CppCompiler=-O0_@@_-g_@@_-gdwarf-2_@@_
 Linker=-lgdi32_@@_-ldinput_@@_-ldxguid_@@_-lwinmm_@@_-lpng32_@@_-lz32_@@_-lminiupnpc_@@_-lws2_32_@@_-liphlpapi_@@_-mconsole_@@_-lgme.dll_@@_-lfmodex_@@_
 PreprocDefines=NORMALSRB2_@@_

@@ -5,7 +5,7 @@ UINT8 graphics_started = 0;
 
 UINT8 keyboard_started = 0;
 
-UINT32 I_GetFreeMem(UINT32 *total)
+size_t I_GetFreeMem(size_t *total)
 {
 	*total = 0;
 	return 0;
@@ -134,11 +134,6 @@ INT32 I_mkdir(const char *dirname, INT32 unixright)
 	return -1;
 }
 
-const CPUInfoFlags *I_CPUInfo(void)
-{
-	return NULL;
-}
-
 const char *I_LocateWad(void)
 {
 	return NULL;
@@ -149,6 +144,18 @@ void I_GetJoystickEvents(void){}
 void I_GetJoystick2Events(void){}
 
 void I_GetMouseEvents(void){}
+
+void I_UpdateMouseGrab(void){}
+
+void I_SetTextInputMode(boolean active)
+{
+	(void)active;
+}
+
+boolean I_GetTextInputMode(void)
+{
+	return false;
+}
 
 char *I_GetEnv(const char *name)
 {
@@ -177,4 +184,3 @@ char *I_ClipboardPaste(void)
 void I_RegisterSysCommands(void) {}
 
 #include "../sdl/dosstr.c"
-

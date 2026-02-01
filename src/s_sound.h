@@ -20,6 +20,11 @@
 #include "command.h"
 #include "tables.h" // angle_t
 
+#ifdef HAVE_OPENMPT
+#include "libopenmpt/libopenmpt.h"
+extern openmpt_module *openmpt_mhandle;
+#endif
+
 // mask used to indicate sound origin is player item pickup
 #define PICKUP_SOUND 0x8000
 
@@ -30,6 +35,14 @@ extern consvar_t cv_resetmusic;
 extern consvar_t cv_gamedigimusic;
 extern consvar_t cv_gamemidimusic;
 extern consvar_t cv_gamesounds;
+extern consvar_t cv_musicpref;
+
+extern consvar_t cv_playmusicifunfocused;
+extern consvar_t cv_playsoundsifunfocused;
+
+#ifdef HAVE_OPENMPT
+extern consvar_t cv_modfilter;
+#endif
 
 #ifdef SNDSERV
 extern consvar_t sndserver_cmd, sndserver_arg;
@@ -92,6 +105,12 @@ void S_Start(void);
 lumpnum_t S_GetSfxLumpNum(sfxinfo_t *sfx);
 
 //
+// Sound Status
+//
+
+boolean S_SoundDisabled(void);
+
+//
 // Start sound for thing at <origin> using <sound_id> from sounds.h
 //
 void S_StartSound(const void *origin, sfxenum_t sound_id);
@@ -111,12 +130,18 @@ boolean S_MIDIMusicDisabled(void);
 boolean S_MusicDisabled(void);
 boolean S_MusicPlaying(void);
 boolean S_MusicPaused(void);
+boolean S_MusicNotInFocus(void);
 musictype_t S_MusicType(void);
 const char *S_MusicName(void);
-boolean S_MusicInfo(char *mname, UINT16 *mflags, boolean *looping);
 boolean S_MusicExists(const char *mname, boolean checkMIDI, boolean checkDigi);
 #define S_DigExists(a) S_MusicExists(a, false, true)
 #define S_MIDIExists(a) S_MusicExists(a, true, false)
+
+// Returns whether the preferred format a (true = MIDI, false = Digital)
+// exists and is enabled for musicname b
+#define S_PrefAvailable(a, b) (a ? \
+	(!S_MIDIMusicDisabled() && S_MIDIExists(b)) : \
+	(!S_DigMusicDisabled() && S_DigExists(b)))
 
 //
 // Music Effects
