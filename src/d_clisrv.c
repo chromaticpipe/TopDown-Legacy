@@ -1241,10 +1241,7 @@ static boolean CL_SendJoin(void)
 		localplayers++;
 	netbuffer->u.clientcfg.localplayers = localplayers;
 	netbuffer->u.clientcfg.version = VERSION;
-	if (cv_netcompat.value)
-		netbuffer->u.clientcfg.subversion = SUBVERSION_NETCOMPAT;
-	else
-		netbuffer->u.clientcfg.subversion = SUBVERSION;
+	netbuffer->u.clientcfg.subversion = SUBVERSION;
 
 	return HSendPacket(servernode, true, 0, sizeof (clientconfig_pak));
 }
@@ -1697,7 +1694,7 @@ static void SL_InsertServer(serverinfo_pak* info, SINT8 node)
 		if (info->version != VERSION)
 			return; // Not same version.
 
-		if (info->subversion != SUBVERSION && info->subversion != SUBVERSION_NETCOMPAT)
+		if (info->subversion != SUBVERSION)
 			return; // Close, but no cigar.
 
 		i = serverlistcount++;
@@ -3469,8 +3466,7 @@ static void HandleConnect(SINT8 node)
 	if (bannednode && bannednode[node])
 		SV_SendRefuse(node, M_GetText("You have been banned\nfrom the server"));
 	else if (netbuffer->u.clientcfg.version != VERSION
-		|| (netbuffer->u.clientcfg.subversion != SUBVERSION
-		&& netbuffer->u.clientcfg.subversion != SUBVERSION_NETCOMPAT))
+		|| (netbuffer->u.clientcfg.subversion != SUBVERSION))
 		SV_SendRefuse(node, va(M_GetText("Different SRB2 versions cannot\nplay a netgame!\n(server version %d.%d.%d)"), VERSION/100, VERSION%100, SUBVERSION));
 	else if (!cv_allownewplayer.value && node)
 		SV_SendRefuse(node, M_GetText("The server is not accepting\njoins for the moment"));

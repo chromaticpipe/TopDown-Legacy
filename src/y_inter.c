@@ -256,10 +256,7 @@ void Y_IntermissionDrawer(void)
 
 		// draw score
 		ST_DrawPatchFromHud(HUD_SCORE, sboscore);
-		if (!splitscreen && (cv_scorepos.value == 1))
-			ST_DrawNumFromHud(HUD_SCORENUMMODERN, data.coop.score);
-		else
-			ST_DrawNumFromHud(HUD_SCORENUM, data.coop.score);
+		ST_DrawNumFromHud(HUD_SCORENUM, data.coop.score);
 
 		// draw time
 		ST_DrawPatchFromHud(HUD_TIME, sbotime);
