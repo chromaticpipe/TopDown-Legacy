@@ -831,16 +831,16 @@ static void IdentifyVersion(void)
 	// Add the weapons
 	D_AddFile(va(pandf,srb2waddir,"rings.dta"));
 
-#ifdef USE_PATCH_DTA
-	// Add our crappy patches to fix our bugs
-	D_AddFile(va(pandf,srb2waddir,"patch.dta"));
-#endif
-
 	// Add the asset pack textures (that really should've been in vanilla)
 	D_AddFile(va(pandf,srb2waddir, "assetpack.td"));
 
 	// Add the new custom TD data
 	D_AddFile(va(pandf,srb2waddir, "tddata.td"));
+
+#ifdef USE_PATCH_DTA
+	// Add our crappy patches to fix our bugs
+	D_AddFile(va(pandf,srb2waddir,"patch.dta"));
+#endif
 
 #if !defined (HAVE_SDL) || defined (HAVE_MIXER)
 	{
