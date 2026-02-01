@@ -240,7 +240,7 @@ static UINT8 *demobuffer = NULL;
 static UINT8 *demo_p, *demotime_p;
 static UINT8 *demoend;
 static UINT8 demoflags;
-UINT16 demoversion;
+static UINT16 demoversion;
 boolean singledemo; // quit after playing a demo from cmdline
 boolean demo_start; // don't start playing demo right away
 static boolean demosynced = true; // console warning message
@@ -3987,7 +3987,7 @@ char *G_BuildMapTitle(INT32 mapnum)
 // DEMO RECORDING
 //
 
-#define DEMOVERSION 0x000A
+#define DEMOVERSION 0x0009
 #define DEMOHEADER  "\xF0" "SRB2Replay" "\x0F"
 
 #define DF_GHOST        0x01 // This demo contains ghost data too!
@@ -5161,7 +5161,6 @@ UINT8 G_CmpDemoTime(char *oldname, char *newname)
 	case DEMOVERSION: // latest always supported
 	// compatibility available?
 	case 0x0008:
-	case 0x0009:
 		break;
 	// too old, cannot support.
 	default:
@@ -5302,7 +5301,6 @@ void G_DoPlayDemo(char *defdemoname)
 	case DEMOVERSION: // latest always supported
 	// compatibility available?
 	case 0x0008:
-	case 0x0009:
 		break;
 	// too old, cannot support.
 	default:
