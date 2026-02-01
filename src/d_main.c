@@ -822,6 +822,11 @@ static void IdentifyVersion(void)
 	// if you change the ordering of this or add/remove a file, be sure to update the md5
 	// checking in D_SRB2Main
 
+#ifdef USE_PATCH_DTA
+	// Add our crappy patches to fix our bugs
+	D_AddFile(va(pandf,srb2waddir,"patch.dta"));
+#endif
+
 	// Add the maps
 	D_AddFile(va(pandf,srb2waddir,"zones.td"));
 
@@ -836,11 +841,6 @@ static void IdentifyVersion(void)
 
 	// Add the new custom TD data
 	D_AddFile(va(pandf,srb2waddir, "tddata.td"));
-
-#ifdef USE_PATCH_DTA
-	// Add our crappy patches to fix our bugs
-	D_AddFile(va(pandf,srb2waddir,"patch.dta"));
-#endif
 
 #if !defined (HAVE_SDL) || defined (HAVE_MIXER)
 	{
@@ -1145,16 +1145,17 @@ void D_SRB2Main(void)
 
 	// Check MD5s of autoloaded files
 	W_VerifyFileMD5(0, ASSET_HASH_SRB2_SRB); // srb2.srb/srb2.wad
-	W_VerifyFileMD5(3, ASSET_HASH_RINGS_DTA); // rings.dta
+#ifdef USE_PATCH_DTA
+	W_VerifyFileMD5(1, ASSET_HASH_PATCH_DTA); // patch.dta
+#endif
+	W_VerifyFileMD5(4, ASSET_HASH_RINGS_DTA); // rings.dta
 
 	// Top Down file MD5s
-	W_VerifyFileMD5(1, "587f2bde4ea2db432accb3cd9ff1f6e7"); // zones.td
-	W_VerifyFileMD5(2, "55bbb2e63edcd2c2ef1712ff8b2010cc"); // player.td
-	W_VerifyFileMD5(4, "16a0bccb4c4619576f0c689f80637e89"); // assetpack.td
-	W_VerifyFileMD5(5, "9457439f920779a7cc994a5b28070e92"); // tddata.td
-#ifdef USE_PATCH_DTA
-	W_VerifyFileMD5(6, ASSET_HASH_PATCH_DTA); // patch.dta
-#endif
+	W_VerifyFileMD5(2, "587f2bde4ea2db432accb3cd9ff1f6e7"); // zones.td
+	W_VerifyFileMD5(3, "55bbb2e63edcd2c2ef1712ff8b2010cc"); // player.td
+	W_VerifyFileMD5(5, "16a0bccb4c4619576f0c689f80637e89"); // assetpack.td
+	W_VerifyFileMD5(6, "9457439f920779a7cc994a5b28070e92"); // tddata.td
+
 	// don't check music.dta because people like to modify it, and it doesn't matter if they do
 	// ...except it does if they slip maps in there, and that's what W_VerifyNMUSlumps is for.
 	//mainwads++; // music.dta does not increment mainwads (see <= 2.1.21)
@@ -1457,4 +1458,3 @@ const char *D_Home(void)
 	if (usehome) return userhome;
 	else return NULL;
 }
-
