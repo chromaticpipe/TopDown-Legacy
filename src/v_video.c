@@ -42,7 +42,9 @@ static CV_PossibleValue_t gamma_cons_t[] = {{0, "MIN"}, {4, "MAX"}, {0, NULL}};
 static void CV_usegamma_OnChange(void);
 
 static CV_PossibleValue_t ticrate_cons_t[] = { {0, "No"}, {1, "Full"}, {2, "Compact"}, {0, NULL} };
+static CV_PossibleValue_t tpscounter_cons_t[] = { {0, "No"}, {1, "Full"}, {2, "Compact"}, {0, NULL} };
 consvar_t cv_ticrate = { "showfps", "No", CV_SAVE, ticrate_cons_t, NULL, 0, NULL, NULL, 0, 0, NULL };
+consvar_t cv_tpscounter = { "showtps", "No", CV_SAVE, tpscounter_cons_t, NULL, 0, NULL, NULL, 0, 0, NULL };
 consvar_t cv_usegamma = {"gamma", "0", CV_SAVE|CV_CALL, gamma_cons_t, CV_usegamma_OnChange, 0, NULL, NULL, 0, 0, NULL};
 
 consvar_t cv_allcaps = {"allcaps", "Off", 0, CV_OnOff, NULL, 0, NULL, NULL, 0, 0, NULL};
@@ -59,13 +61,9 @@ static void CV_Gammaxxx_ONChange(void);
 // - You can change them in software,
 // but they won't do anything.
 static CV_PossibleValue_t grgamma_cons_t[] = {{1, "MIN"}, {255, "MAX"}, {0, NULL}};
-static CV_PossibleValue_t grsoftwarefog_cons_t[] = {{0, "Off"}, {1, "On"}, {2, "LightPlanes"}, {0, NULL}};
+static CV_PossibleValue_t grmodelinterpolation_cons_t[] = {{0, "Off"}, {1, "Sometimes"}, {2, "Always"}, {0, NULL}};
 
-consvar_t cv_voodoocompatibility = {"gr_voodoocompatibility", "Off", CV_SAVE, CV_OnOff, NULL, 0, NULL, NULL, 0, 0, NULL};
 consvar_t cv_grfovchange = {"gr_fovchange", "Off", CV_SAVE, CV_OnOff, NULL, 0, NULL, NULL, 0, 0, NULL};
-consvar_t cv_grfog = {"gr_fog", "On", CV_SAVE, CV_OnOff, NULL, 0, NULL, NULL, 0, 0, NULL};
-consvar_t cv_grfogcolor = {"gr_fogcolor", "AAAAAA", CV_SAVE, NULL, NULL, 0, NULL, NULL, 0, 0, NULL};
-consvar_t cv_grsoftwarefog = {"gr_softwarefog", "Off", CV_SAVE, grsoftwarefog_cons_t, NULL, 0, NULL, NULL, 0, 0, NULL};
 consvar_t cv_grgammared = {"gr_gammared", "127", CV_SAVE|CV_CALL, grgamma_cons_t,
                            CV_Gammaxxx_ONChange, 0, NULL, NULL, 0, 0, NULL};
 consvar_t cv_grgammagreen = {"gr_gammagreen", "127", CV_SAVE|CV_CALL, grgamma_cons_t,
@@ -79,10 +77,11 @@ consvar_t cv_grcoronas = {"gr_coronas", "On", CV_SAVE, CV_OnOff, NULL, 0, NULL, 
 consvar_t cv_grcoronasize = {"gr_coronasize", "1", CV_SAVE| CV_FLOAT, 0, NULL, 0, NULL, NULL, 0, 0, NULL};
 #endif
 
-static CV_PossibleValue_t CV_MD2[] = {{0, "Off"}, {1, "On"}, {2, "Old"}, {0, NULL}};
 // console variables in development
-consvar_t cv_grmd2 = {"gr_md2", "Off", CV_SAVE, CV_MD2, NULL, 0, NULL, NULL, 0, 0, NULL};
+consvar_t cv_grmd2 = {"gr_md2", "Off", CV_SAVE, CV_OnOff, NULL, 0, NULL, NULL, 0, 0, NULL};
+consvar_t cv_grmodelinterpolation = {"gr_modelinterpolation", "Sometimes", CV_SAVE, grmodelinterpolation_cons_t, NULL, 0, NULL, NULL, 0, 0, NULL};
 consvar_t cv_grspritebillboarding = {"gr_spritebillboarding", "Off", CV_SAVE, CV_OnOff, NULL, 0, NULL, NULL, 0, 0, NULL};
+consvar_t cv_grskydome = {"gr_skydome", "Off", CV_SAVE, CV_OnOff, NULL, 0, NULL, NULL, 0, 0, NULL}; //now off by default
 #endif
 
 const UINT8 gammatable[5][256] =
@@ -2241,8 +2240,12 @@ Unoptimized version
 			heatindex[view] %= height;
 		}
 
-		heatindex[view]++;
-		heatindex[view] %= vid.height;
+
+		if (renderisnewtic) // This isn't interpolated... but how do you interpolate a one-pixel shift?
+		{
+			heatindex[view]++;
+			heatindex[view] %= vid.height;
+		}
 
 		VID_BlitLinearScreen(tmpscr+vid.width*vid.bpp*yoffset, screens[0]+vid.width*vid.bpp*yoffset,
 				vid.width*vid.bpp, height, vid.width*vid.bpp, vid.width);

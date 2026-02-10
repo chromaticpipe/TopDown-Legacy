@@ -19,6 +19,7 @@
 #include "f_finale.h"
 #include "p_setup.h"
 #include "p_saveg.h"
+#include "i_time.h"
 #include "i_system.h"
 #include "am_map.h"
 #include "m_random.h"
@@ -46,6 +47,8 @@
 #include "b_bot.h"
 #include "m_cond.h" // condition sets
 #include "md5.h" // demo checksums
+#include "r_fps.h" // Uncapped
+
 
 gameaction_t gameaction;
 gamestate_t gamestate = GS_NULL;
@@ -99,7 +102,7 @@ UINT32 demoIdleTime  = 3*TICRATE;
 boolean timingdemo; // if true, exit with report on completion
 boolean nodrawers; // for comparative timing purposes
 boolean noblit; // for comparative timing purposes
-static tic_t demostarttime; // for comparative timing purposes
+tic_t demostarttime; // for comparative timing purposes
 
 boolean netgame; // only true if packets are broadcast
 boolean multiplayer;
@@ -240,10 +243,10 @@ static UINT8 *demobuffer = NULL;
 static UINT8 *demo_p, *demotime_p;
 static UINT8 *demoend;
 static UINT8 demoflags;
-static UINT16 demoversion;
+UINT16 demoversion;
 boolean singledemo; // quit after playing a demo from cmdline
 boolean demo_start; // don't start playing demo right away
-static boolean demosynced = true; // console warning message
+boolean demosynced = true; // console warning message
 
 boolean metalrecording; // recording as metal sonic
 mobj_t *metalplayback;
@@ -1724,6 +1727,7 @@ void G_DoLoadLevel(boolean resetplayer)
 
 	// Make sure objectplace is OFF when you first start the level!
 	OP_ResetObjectplace();
+	demosynced = true;
 
 	levelstarttic = gametic; // for time calculation
 
@@ -2472,9 +2476,7 @@ void G_SpawnPlayer(INT32 playernum, boolean starpost, boolean bubblepossible)
 	if (starpost) //Don't even bother with looking for a place to spawn.
 	{
 		P_MovePlayerToStarpost(playernum);
-#ifdef HAVE_BLUA
 		LUAh_PlayerSpawn(&players[playernum]); // Lua hook for player spawning :)
-#endif
 		return;
 	}
 
@@ -2524,9 +2526,7 @@ void G_SpawnPlayer(INT32 playernum, boolean starpost, boolean bubblepossible)
 	}
 	P_MovePlayerToSpawn(playernum, spawnpoint);
 
-#ifdef HAVE_BLUA
 	LUAh_PlayerSpawn(&players[playernum]); // Lua hook for player spawning :)
-#endif
 
 }
 
@@ -2741,9 +2741,7 @@ void G_DoReborn(INT32 playernum)
 		}
 		else
 		{
-#ifdef HAVE_BLUA
 			LUAh_MapChange(gamemap);
-#endif
 			G_DoLoadLevel(true);
 		}
 	}
@@ -2764,14 +2762,10 @@ void G_DoReborn(INT32 playernum)
 			}
 		}
 		if (maptol & TOL_TD && gametype == GT_COOP && numplayers == 0)
-#ifdef HAVE_BLUA
 		{
 			LUAh_MapChange(gamemap);
-#endif
 			G_DoLoadLevel(true);
-#ifdef HAVE_BLUA
 		}
-#endif
 		else
 		{
 			// respawn at the start
@@ -4696,7 +4690,7 @@ void G_ReadMetalTic(mobj_t *metal)
 	// Read changes from the tic
 	if (ziptic & GZT_XYZ)
 	{
-		P_TeleportMove(metal, READFIXED(metal_p), READFIXED(metal_p), READFIXED(metal_p));
+		P_MoveOrigin(metal, READFIXED(metal_p), READFIXED(metal_p), READFIXED(metal_p));
 		oldmetal.x = metal->x;
 		oldmetal.y = metal->y;
 		oldmetal.z = metal->z;
@@ -5409,15 +5403,12 @@ void G_DoPlayDemo(char *defdemoname)
 	if (VERSION != version || SUBVERSION != subversion)
 		CONS_Alert(CONS_WARNING, M_GetText("Demo version does not match game version. Desyncs may occur.\n"));
 
-	// console warning messages
-	demosynced = true;
+
 
 	// didn't start recording right away.
 	demo_start = false;
 
-#ifdef HAVE_BLUA
 	LUAh_MapChange(gamemap);
-#endif
 	displayplayer = consoleplayer = 0;
 	memset(playeringame,0,sizeof(playeringame));
 	playeringame[0] = true;
@@ -5870,7 +5861,7 @@ boolean G_CheckDemoStatus(void)
 		timingdemo = false;
 		f1 = (double)demotime;
 		f2 = (double)framecount*TICRATE;
-		CONS_Printf(M_GetText("timed %u gametics in %d realtics\n%f seconds, %f avg fps\n"), leveltime,demotime,f1/TICRATE,f2/f1);
+		CONS_Printf(M_GetText("timed %u gametics in %d realtics - %u frames\n%f seconds, %f avg fps\n"), leveltime,demotime,(UINT32)framecount,f1/TICRATE,f2/f1);
 		if (restorecv_vidwait != cv_vidwait.value)
 			CV_SetValue(&cv_vidwait, restorecv_vidwait);
 		D_AdvanceDemo();

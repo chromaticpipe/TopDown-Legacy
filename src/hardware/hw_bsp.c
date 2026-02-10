@@ -29,6 +29,7 @@
 #include "../m_argv.h"
 #include "../i_video.h"
 #include "../w_wad.h"
+#include "hw_main.h"
 
 // --------------------------------------------------------------------------
 // This is global data for planes rendering
@@ -586,13 +587,20 @@ static void loading_status(void)
 	char s[16];
 	int x, y;
 
+	if(!cv_glloadingscreen.value)
+		return;
+
 	I_OsPolling();
 	CON_Drawer();
 	sprintf(s, "%d%%", (++ls_percent)<<1);
 	x = BASEVIDWIDTH/2;
 	y = BASEVIDHEIGHT/2;
 	V_DrawFill(0, 0, BASEVIDWIDTH, BASEVIDHEIGHT, 31); // Black background to match fade in effect
-	//V_DrawPatchFill(W_CachePatchName("SRB2BACK",PU_CACHE)); // SRB2 background, ehhh too bright.
+	if (cv_glloadingscreen.value == 2)
+	{
+	V_DrawPatchFill(W_CachePatchName("SRB2BACK",PU_CACHE)); // SRB2 background, ehhh too bright. 
+															// Who gives a shit about brightness
+	}
 	M_DrawTextBox(x-58, y-8, 13, 1);
 	V_DrawString(x-50, y, V_YELLOWMAP, "Loading...");
 	V_DrawRightAlignedString(x+50, y, V_YELLOWMAP, s);
@@ -880,12 +888,11 @@ static void AdjustSegs(void)
 			float distv1,distv2,tmp;
 			nearv1 = nearv2 = MYMAX;
 
-#ifdef POLYOBJECTS
+
 			// Don't touch polyobject segs. We'll compensate
 			// for this when we go about drawing them.
 			if (lseg->polyseg)
 				continue;
-#endif
 
 			if (p) {
 				for (j = 0; j < p->numpts; j++)

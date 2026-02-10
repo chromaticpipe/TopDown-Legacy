@@ -32,7 +32,7 @@
 //                                                       STANDARD DLL EXPORTS
 // ==========================================================================
 
-EXPORT boolean HWRAPI(Init) (I_Error_t ErrorFunction);
+EXPORT boolean HWRAPI(Init) (void);
 #ifndef HAVE_SDL
 EXPORT void HWRAPI(Shutdown) (void);
 #endif
@@ -47,6 +47,8 @@ EXPORT void HWRAPI(SetPalette) (RGBA_t *ppal, RGBA_t *pgamma);
 EXPORT void HWRAPI(FinishUpdate) (INT32 waitvbl);
 EXPORT void HWRAPI(Draw2DLine) (F2DCoord *v1, F2DCoord *v2, RGBA_t Color);
 EXPORT void HWRAPI(DrawPolygon) (FSurfaceInfo *pSurf, FOutVector *pOutVerts, FUINT iNumPts, FBITFIELD PolyFlags);
+EXPORT void HWRAPI(DrawIndexedTriangles) (FSurfaceInfo *pSurf, FOutVector *pOutVerts, FUINT iNumPts, FBITFIELD PolyFlags, unsigned int *IndexArray);
+EXPORT void HWRAPI(RenderSkyDome) (gl_sky_t *sky);
 EXPORT void HWRAPI(SetBlend) (FBITFIELD PolyFlags);
 EXPORT void HWRAPI(ClearBuffer) (FBOOLEAN ColorMask, FBOOLEAN DepthMask, FRGBAFloat *ClearColor);
 EXPORT void HWRAPI(SetTexture) (FTextureInfo *TexInfo);
@@ -58,24 +60,34 @@ EXPORT void HWRAPI(ClearMipMapCache) (void);
 EXPORT void HWRAPI(SetSpecialState) (hwdspecialstate_t IdState, INT32 Value);
 
 //Hurdler: added for new development
-EXPORT void HWRAPI(DrawMD2) (INT32 *gl_cmd_buffer, md2_frame_t *frame, FTransform *pos, float scale);
-EXPORT void HWRAPI(DrawMD2i) (INT32 *gl_cmd_buffer, md2_frame_t *frame, INT32 duration, INT32 tics, md2_frame_t *nextframe, FTransform *pos, float scale, UINT8 flipped, UINT8 *color);
+EXPORT void HWRAPI(DrawModel) (model_t *model, INT32 frameIndex, INT32 duration, INT32 tics, INT32 nextFrameIndex, FTransform *pos, float scale, UINT8 flipped, FSurfaceInfo *Surface);
+EXPORT void HWRAPI(CreateModelVBOs) (model_t *model);
 EXPORT void HWRAPI(SetTransform) (FTransform *ptransform);
 EXPORT INT32 HWRAPI(GetTextureUsed) (void);
-EXPORT INT32 HWRAPI(GetRenderVersion) (void);
 
-#ifdef SHUFFLE
-#define SCREENVERTS 10
-EXPORT void HWRAPI(PostImgRedraw) (float points[SCREENVERTS][SCREENVERTS][2]);
-#endif
+
+
 EXPORT void HWRAPI(FlushScreenTextures) (void);
 EXPORT void HWRAPI(StartScreenWipe) (void);
 EXPORT void HWRAPI(EndScreenWipe) (void);
-EXPORT void HWRAPI(DoScreenWipe) (float alpha);
+EXPORT void HWRAPI(DoScreenWipe) (void);
 EXPORT void HWRAPI(DrawIntermissionBG) (void);
 EXPORT void HWRAPI(MakeScreenTexture) (void);
 EXPORT void HWRAPI(MakeScreenFinalTexture) (void);
 EXPORT void HWRAPI(DrawScreenFinalTexture) (int width, int height);
+
+#define SCREENVERTS 10
+EXPORT void HWRAPI(PostImgRedraw) (float points[SCREENVERTS][SCREENVERTS][2]);
+
+// jimita
+EXPORT boolean HWRAPI(CompileShaders) (void);
+EXPORT void HWRAPI(CleanShaders) (void);
+EXPORT void HWRAPI(SetShader) (int shader);
+EXPORT void HWRAPI(UnSetShader) (void);
+
+EXPORT void HWRAPI(SetShaderInfo) (hwdshaderinfo_t info, INT32 value);
+EXPORT void HWRAPI(LoadCustomShader) (int number, char *code, size_t size, boolean isfragment);
+
 // ==========================================================================
 //                                      HWR DRIVER OBJECT, FOR CLIENT PROGRAM
 // ==========================================================================
@@ -89,6 +101,8 @@ struct hwdriver_s
 	FinishUpdate        pfnFinishUpdate;
 	Draw2DLine          pfnDraw2DLine;
 	DrawPolygon         pfnDrawPolygon;
+	DrawIndexedTriangles    pfnDrawIndexedTriangles;
+	RenderSkyDome       pfnRenderSkyDome;
 	SetBlend            pfnSetBlend;
 	ClearBuffer         pfnClearBuffer;
 	SetTexture          pfnSetTexture;
@@ -96,20 +110,17 @@ struct hwdriver_s
 	GClipRect           pfnGClipRect;
 	ClearMipMapCache    pfnClearMipMapCache;
 	SetSpecialState     pfnSetSpecialState;//Hurdler: added for backward compatibility
-	DrawMD2             pfnDrawMD2;
-	DrawMD2i            pfnDrawMD2i;
+	DrawModel           pfnDrawModel;
+	CreateModelVBOs     pfnCreateModelVBOs;
 	SetTransform        pfnSetTransform;
 	GetTextureUsed      pfnGetTextureUsed;
-	GetRenderVersion    pfnGetRenderVersion;
 #ifdef _WINDOWS
 	GetModeList         pfnGetModeList;
 #endif
 #ifndef HAVE_SDL
 	Shutdown            pfnShutdown;
 #endif
-#ifdef SHUFFLE
 	PostImgRedraw       pfnPostImgRedraw;
-#endif
 	FlushScreenTextures pfnFlushScreenTextures;
 	StartScreenWipe     pfnStartScreenWipe;
 	EndScreenWipe       pfnEndScreenWipe;
@@ -118,6 +129,14 @@ struct hwdriver_s
 	MakeScreenTexture   pfnMakeScreenTexture;
 	MakeScreenFinalTexture  pfnMakeScreenFinalTexture;
 	DrawScreenFinalTexture  pfnDrawScreenFinalTexture;
+
+	CompileShaders      pfnCompileShaders;
+	CleanShaders        pfnCleanShaders;
+	SetShader           pfnSetShader;
+	UnSetShader         pfnUnSetShader;
+
+	SetShaderInfo       pfnSetShaderInfo;
+	LoadCustomShader    pfnLoadCustomShader;
 };
 
 extern struct hwdriver_s hwdriver;

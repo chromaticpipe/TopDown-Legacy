@@ -108,11 +108,9 @@ static inline void B_BuildTailsTiccmd(mobj_t *sonic, mobj_t *tails, ticcmd_t *cm
 	if (!sonic || sonic->health <= 0)
 		return;
 
-#ifdef HAVE_BLUA
 	// Lua can handle it!
 	if (LUAh_BotAI(sonic, tails, cmd))
 		return;
-#endif
 
 	if (tails->player->pflags & (PF_MACESPIN|PF_ITEMHANG))
 	{
@@ -196,11 +194,9 @@ void B_BuildTiccmd(player_t *player, ticcmd_t *cmd)
 	// Bot AI isn't programmed in analog.
 	CV_SetValue(&cv_analog2, false);
 
-#ifdef HAVE_BLUA
 	// Let Lua scripts build ticcmds
 	if (LUAh_BotTiccmd(player, cmd))
 		return;
-#endif
 
 	// We don't have any main character AI, sorry. D:
 	if (player-players == consoleplayer)
@@ -346,7 +342,7 @@ void B_RespawnBot(INT32 playernum)
 	player->powers[pw_gravityboots] = sonic->player->powers[pw_gravityboots];
 	player->powers[pw_nocontrol] = sonic->player->powers[pw_nocontrol];
 
-	P_TeleportMove(tails, x, y, z);
+	P_SetOrigin(tails, x, y, z);
 	if (player->charability == CA_FLY)
 	{
 		P_SetPlayerMobjState(tails, S_PLAY_ABL1);

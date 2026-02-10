@@ -53,6 +53,7 @@
 # NOGME=1 - Disable game music emu, retro VGM support.
 # NOOPENMPT=1 - Disable module (tracker) music support.
 # NOMIXER=1 - Disable SDL Mixer (audio playback).
+# NOTHREADS=1 - Disable multithreading.
 #
 # Netplay incompatible
 # --------------------
@@ -242,8 +243,6 @@ endif
 
 # debug_opts also get passed to windres
 opts+=$(debug_opts)
-
-opts+=-DHAVE_BLUA
 
 opts+=$(foreach v,$(passthru_opts),$(if $($(v)),-D$(v)))
 
