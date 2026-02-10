@@ -9016,7 +9016,6 @@ mobj_t *P_SpawnMobj(fixed_t x, fixed_t y, fixed_t z, mobjtype_t type)
 			)
 			P_SpawnShadowMobj(mobj);
 	}
-	}
 
 	if (!(mobj->flags & MF_NOTHINK))
 		P_AddThinker(&mobj->thinker);
