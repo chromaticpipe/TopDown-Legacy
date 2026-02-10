@@ -129,7 +129,7 @@ consvar_t cv_grbatching = {"gr_batching", "On", 0, CV_OnOff, NULL, 0, NULL, NULL
 
 consvar_t cv_grmodellighting = {"gr_modellighting", "Off", CV_SAVE|CV_CALL, CV_OnOff, CV_grmodellighting_OnChange, 0, NULL, NULL, 0, 0, NULL};
 
-consvar_t cv_grshearing = {"gr_shearing", "Off", CV_SAVE, grshearing_cons_t, NULL, 0, NULL, NULL, 0, 0, NULL};
+consvar_t cv_grshearing = {"gr_shearing", "On", CV_SAVE, grshearing_cons_t, NULL, 0, NULL, NULL, 0, 0, NULL};
 
 consvar_t cv_glloadingscreen = {"glloadingscreen", "Off", CV_SAVE, glloadingscreen_cons_t, NULL, 0, NULL, NULL, 0, 0, NULL};
 
@@ -442,7 +442,7 @@ static void HWR_RenderPlane(sector_t *sector, extrasubsector_t *xsub, boolean is
 
 	INT32 shader = SHADER_DEFAULT;
 
-	
+
 
 	// no convex poly were generated for this subsector
 	if (!xsub->planepoly)
@@ -814,7 +814,7 @@ static void HWR_ProjectWall(FOutVector *wallVerts, FSurfaceInfo *pSurf, FBITFIEL
 
 	HWR_Lighting(pSurf, lightlevel, wallcolormap);
 
-	
+
 	if (HWR_UseShader())
 	{
 		shader = SHADER_WALL;
@@ -3854,7 +3854,7 @@ static void HWR_DrawSpriteShadow(gr_vissprite_t *spr, GLPatch_t *gpatch, float t
 		{
 			shader = SHADER_FLOOR;
 			blendmode |= PF_ColorMapped;
-		}	
+		}
 		HWR_ProcessPolygon(&sSurf, swallVerts, 4, blendmode, shader, false);
 	}
 }
@@ -4015,7 +4015,7 @@ static void HWR_SplitSprite(gr_vissprite_t *spr)
 				baseWallVerts[i].z += (gr_viewy - baseWallVerts[i].z)*distfact;
 				baseWallVerts[i].y += (gr_viewz - baseWallVerts[i].y)*distfact;
 		}
-	}	
+	}
 
 	realtop = top = baseWallVerts[3].y;
 	realbot = bot = baseWallVerts[0].y;
