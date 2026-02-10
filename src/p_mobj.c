@@ -9121,6 +9121,8 @@ mobj_t *P_SpawnShadowMobj(mobj_t * caster)
 	// Tells MobjCheckWater that the water height was not set.
 	mobj->watertop = INT32_MAX;
 
+	mobj->resetinterp = true;
+
 	mobj->z = mobj->floorz;
 
 	// defaults onground
@@ -9158,6 +9160,8 @@ mobj_t *P_SpawnShadowMobj(mobj_t * caster)
 		P_CheckGravity(mobj, false);
 
 	P_SetTarget(&mobj->target, caster); // set the shadow's caster as the target
+
+	R_AddMobjInterpolator(mobj);
 
 	return mobj;
 }
