@@ -7267,6 +7267,7 @@ void P_MobjThinker(mobj_t *mobj)
 				break;
 			case MT_OKUU:
 				P_BossBirdThinker(mobj);
+				break;
 			default: // Generic SOC-made boss
 				if (mobj->flags2 & MF2_SKULLFLY)
 					P_SpawnGhostMobj(mobj);
